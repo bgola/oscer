@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+
+from oscer import guess_osc_type, send_osc
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('address', metavar='OSC_ADDR', type=str, nargs=1, help="OSC address to send")
+    parser.add_argument('values', metavar='OSC_VALUE', type=guess_osc_type, nargs='*', help="OSC values")
+    parser.add_argument("--ip", default="",
+        help="The ip of the OSC receiver, can be set by OSCER_HOST env variable, defaults to '127.0.0.1'")
+    parser.add_argument("--port", type=int, default=0,
+        help="The port of the OSC receiver, can be set by OSCER_PORT env variable, defaults to 57142")
+    args = parser.parse_args()
+
+    ip = args.ip
+    port = args.port
+    if ip == "":
+	    ip = os.environ.get("OSCER_HOST", "127.0.0.1")
+    if port == 0:
+        port = os.environ.get("OSCER_PORT", 57142)
+
+    send_osc(ip, port, args.address[0], args.values)
